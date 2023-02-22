@@ -1,6 +1,21 @@
 import pygame
 import random
+
 pygame.init()
+
+pygame.mixer.music.load('Sounds/Background.mp3')
+pygame.mixer.music.set_volume(0.03)
+pygame.mixer.music.play(-1)
+
+platformS = pygame.mixer.Sound('Sounds/platform.ogg')
+platformS.set_volume(0.3)
+
+fallS = pygame.mixer.Sound('Sounds/fall.ogg')
+fallS.set_volume(0.3)
+
+wallS = pygame.mixer.Sound('Sounds/walls.ogg')
+wallS.set_volume(0.3)
+
 width = 1366
 height = 900
 fps = 60
@@ -73,14 +88,21 @@ while run:
     if img_rect.bottom > platform_rect.top:
         if img_rect.left < platform_rect.right and img_rect.right > platform_rect.left:
             speedY = -speedY
+            platformS.play()
+
     if img_rect.top < 0:
         speedY = -speedY
+        wallS.play()
     if img_rect.left < 0:
         speedX = -speedX
+        wallS.play()
     if img_rect.right > width:
         speedX = -speedX
+        wallS.play()
 
     if img_rect.bottom > height:
+        if hp > 0:
+            fallS.play()
         hp -= 1
         if hp == 2:
             heart3_rect.y = -50
@@ -91,6 +113,7 @@ while run:
             img_rect.y = 5
         elif hp == 0:
             heart1_rect.y = -50
+            fallS.set_volume(0)
 
     pygame.display.update()
 
