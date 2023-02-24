@@ -1,6 +1,5 @@
 import pygame
 import random
-
 pygame.init()
 
 pygame.mixer.music.load('Sounds/Background.mp3')
@@ -19,6 +18,7 @@ wallS.set_volume(0.3)
 width = 1366
 height = 900
 fps = 60
+
 gameName = 'First project'
 screen = pygame.display.set_mode((width, height))
 
@@ -60,6 +60,10 @@ platform_rect = platform.get_rect()
 platform_rect.x = 500
 platform_rect.y = 800
 
+score = 0
+
+f1 = pygame.font.Font(None, 46)
+
 speedX = 10
 speedY = 10
 clock = pygame.time.Clock()
@@ -71,24 +75,31 @@ while run:
             run = False
     key = pygame.key.get_pressed()
 
+    Score = f1.render('Score: ' + str(score), 50, (255, 255, 255))
+
     screen.blit(art, art_rect)
     screen.blit(img, img_rect)
     screen.blit(platform, platform_rect)
-    screen.blit(heart1, heart1_rect)
-    screen.blit(heart2, heart2_rect)
-    screen.blit(heart3, heart3_rect)
+    if hp >= 1:
+        screen.blit(heart1, heart1_rect)
+    if hp >= 2:
+        screen.blit(heart2, heart2_rect)
+    if hp >= 3:
+        screen.blit(heart3, heart3_rect)
+    screen.blit(Score, (10, 10))
 
     img_rect.x += speedX
     img_rect.y += speedY
 
     if key[pygame.K_LEFT] and platform_rect.left > 0:
-        platform_rect.x -= 12
+        platform_rect.x -= 11
     if key[pygame.K_RIGHT] and platform_rect.right < width:
-        platform_rect.x += 12
+        platform_rect.x += 11
     if img_rect.bottom > platform_rect.top:
         if img_rect.left < platform_rect.right and img_rect.right > platform_rect.left:
             speedY = -speedY
             platformS.play()
+            score += 1
 
     if img_rect.top < 0:
         speedY = -speedY
