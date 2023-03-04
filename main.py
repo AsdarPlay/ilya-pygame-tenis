@@ -70,6 +70,8 @@ maxScore = 0
 #Шрифт
 f1 = pygame.font.Font(None, 46)
 
+
+
 def draw_begin():
     pass
 
@@ -111,7 +113,6 @@ while run:
         text_game_over2 = f1.render('Your score: ' + str(score), True, white)
         text_game_over3 = f1.render('Your max score: ' + str(maxScore), True, white)
         text_game_over4 = f2.render('To restart game press ENTER', True, white)
-        text_game_over5 = f2.render('Or press ESC to leave game', True, white)
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -123,7 +124,6 @@ while run:
             screen.blit(text_game_over2, ((width / 2) - 230, 150))
             screen.blit(text_game_over3, ((width / 2) - 285, 220))
             screen.blit(text_game_over4, ((width / 2) - 380, 330))
-            screen.blit(text_game_over5, ((width / 2) - 380, 400))
             pygame.display.update()
 
 
