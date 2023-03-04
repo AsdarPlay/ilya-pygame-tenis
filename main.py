@@ -94,7 +94,7 @@ def draw_begin():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-            elif event.key == pygame.K_RETURN:
+            elif pygame.key.get_pressed(RETURN):
                 start = False
         startS.play()
         screen.fill(black)
@@ -125,15 +125,18 @@ def draw_game_over():
     text_game_over2 = f1.render('Your score: ' + str(score), True, white)
     text_game_over3 = f1.render('Your max score: ' + str(maxScore), True, white)
     text_game_over4 = f2.render('To restart game press ENTER', True, white)
-    while True:
+    end = True
+    while end:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            elif pygame.key.get_pressed(RETURN):
+                end = False
         screen.fill(black)
-        screen.blit(text_game_over, ((width / 2) - 200, 80))
-        screen.blit(text_game_over2, ((width / 2) - 230, 150))
-        screen.blit(text_game_over3, ((width / 2) - 285, 220))
-        screen.blit(text_game_over4, ((width / 2) - 380, 330))
+        screen.blit(text_game_over, ((width / 2) - 200, 150))
+        screen.blit(text_game_over2, ((width / 2) - 230, 220))
+        screen.blit(text_game_over3, ((width / 2) - 285, 330))
+        screen.blit(text_game_over4, ((width / 2) - 380, 400))
         pygame.display.update()
 
 #Основной игровой цикл
@@ -143,8 +146,8 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+    
     key = pygame.key.get_pressed()
-
     #Отрисовываем все спрайты, которые добавили ранее
     Score = f1.render('Score: ' + str(score), 50, (white))
     MaxScore = f1.render('Max score: ' + str(maxScore), 50, (white))
