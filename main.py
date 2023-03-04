@@ -7,6 +7,9 @@ pygame.init() #Инициализируем pygame, который импорт�
 backgroungS = pygame.mixer.Sound('Sounds/Background.ogg')
 backgroungS.set_volume(0.1)
 backgroungS.play(-1)
+    #Стартовая музыка
+startS = pygame.mixer.Sound('Sounds/start.ogg')
+startS.set_volume(0.1)
     #Проигрыш(звук)
 game_overS = pygame.mixer.Sound('Sounds/game_over.ogg')
 game_overS.set_volume(0.3)
@@ -53,7 +56,7 @@ heart3_rect.x = width - 150
 img = pygame.image.load('ball.png')
 img = pygame.transform.scale(img, (80, 80))
 img_rect = img.get_rect()
-img_rect.x = random.randint(width - (width - 50), width - 50)
+img_rect.x = random.randint(width - (width - 100), width - 100)
 #Фон
 art = pygame.image.load('background.png')
 art = pygame.transform.scale(art, (width, height))
@@ -70,16 +73,68 @@ maxScore = 0
 #Шрифт
 f1 = pygame.font.Font(None, 46)
 
-
-
-def draw_begin():
-    pass
-
 #Параметры скорости мяча
 speedX = 12
 speedY = 12
 
 clock = pygame.time.Clock()
+
+def draw_begin():
+    SpeedX = 2
+    SpeedY = 2
+    f1 = pygame.font.Font(None, 100)
+    text_game_begin = f1.render('Press SPACE or ENTER', True, white)
+    text_game_begin2 = f1.render('to start game', True, white)
+    ball = pygame.image.load('ball.png')
+    ball = pygame.transform.scale(ball, (100, 100))
+    ball_rect = ball.get_rect()
+    ball_rect.x = 0
+    start = True
+    while start:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            elif event.key == pygame.K_RETURN:
+                start = False
+        startS.play()
+        screen.fill(black)
+        screen.blit(ball, ball_rect)
+        screen.blit(text_game_begin, ((width / 2) - 330, 350))
+        screen.blit(text_game_begin2, ((width / 2) - 230, 420))
+        ball_rect.x += SpeedX
+        ball_rect.y += SpeedY
+        pygame.display.update()
+
+        if ball_rect.top < 0:
+            SpeedY = -SpeedY
+        if ball_rect.left < 0:
+            SpeedX = -SpeedX
+        if ball_rect.right > width:
+            SpeedX = -SpeedX
+            wallS.play()
+        if ball_rect.bottom > height:
+            SpeedY = -SpeedY
+        pygame.display.update()
+
+
+def draw_game_over():
+    global score, maxScore
+    f1 = pygame.font.Font(None, 100)
+    f2 = pygame.font.Font(None, 80)
+    text_game_over = f1.render('Game over!', True, white)
+    text_game_over2 = f1.render('Your score: ' + str(score), True, white)
+    text_game_over3 = f1.render('Your max score: ' + str(maxScore), True, white)
+    text_game_over4 = f2.render('To restart game press ENTER', True, white)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        screen.fill(black)
+        screen.blit(text_game_over, ((width / 2) - 200, 80))
+        screen.blit(text_game_over2, ((width / 2) - 230, 150))
+        screen.blit(text_game_over3, ((width / 2) - 285, 220))
+        screen.blit(text_game_over4, ((width / 2) - 380, 330))
+        pygame.display.update()
 
 #Основной игровой цикл
 run = True
@@ -104,27 +159,6 @@ while run:
         screen.blit(heart3, heart3_rect)
     screen.blit(Score, (10, 10))
     screen.blit(MaxScore, (10, 60))
-
-    def draw_game_over():
-        global score, maxScore
-        f1 = pygame.font.Font(None, 100)
-        f2 = pygame.font.Font(None, 80)
-        text_game_over = f1.render('Game over!', True, white)
-        text_game_over2 = f1.render('Your score: ' + str(score), True, white)
-        text_game_over3 = f1.render('Your max score: ' + str(maxScore), True, white)
-        text_game_over4 = f2.render('To restart game press ENTER', True, white)
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                if key[pygame.K_ESCAPE]:
-                    pygame.quit()
-            screen.fill(black)
-            screen.blit(text_game_over, ((width / 2) - 200, 80))
-            screen.blit(text_game_over2, ((width / 2) - 230, 150))
-            screen.blit(text_game_over3, ((width / 2) - 285, 220))
-            screen.blit(text_game_over4, ((width / 2) - 380, 330))
-            pygame.display.update()
 
 
     img_rect.x += speedX
