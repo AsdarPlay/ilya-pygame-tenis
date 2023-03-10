@@ -6,7 +6,7 @@ pygame.init() #Инициализируем pygame, который импорт�
     #Фоновая музыка
 backgroungS = pygame.mixer.Sound('Sounds/Background.ogg')
 backgroungS.set_volume(0.1)
-backgroungS.play(-1)
+
     #Стартовая музыка
 startS = pygame.mixer.Sound('Sounds/start.ogg')
 startS.set_volume(0.1)
@@ -94,7 +94,7 @@ def draw_begin():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-            elif pygame.key.get_pressed(RETURN):
+            elif pygame.key.get_pressed(pygame.K_RETURN):
                 start = False
         startS.play()
         screen.fill(black)
@@ -130,8 +130,7 @@ def draw_game_over():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-            elif pygame.key.get_pressed(RETURN):
-                end = False
+
         screen.fill(black)
         screen.blit(text_game_over, ((width / 2) - 200, 150))
         screen.blit(text_game_over2, ((width / 2) - 230, 220))
@@ -141,12 +140,12 @@ def draw_game_over():
 
 #Основной игровой цикл
 run = True
+backgroungS.play()
 while run:
     clock.tick(fps)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-    
     key = pygame.key.get_pressed()
     #Отрисовываем все спрайты, которые добавили ранее
     Score = f1.render('Score: ' + str(score), 50, (white))
@@ -176,6 +175,7 @@ while run:
             speedY = -speedY
             platformS.play()
             score += 1
+
     #Физика мяча и его звуки
     if img_rect.top < 0:
         speedY = -speedY
@@ -200,11 +200,12 @@ while run:
         elif hp == 0:
             heart1_rect.y = -50
             fallS.set_volume(0)
+
             backgroungS.stop()
             game_overS.play()
 
             draw_game_over()
-
+            pygame.display.update()
     if score > maxScore:
         maxScore += 1
 
