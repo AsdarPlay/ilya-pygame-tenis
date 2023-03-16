@@ -56,7 +56,7 @@ heart3_rect.x = width - 150
 img = pygame.image.load('ball.png')
 img = pygame.transform.scale(img, (80, 80))
 img_rect = img.get_rect()
-img_rect.x = random.randint(width - (width - 100), width - 100)
+img_rect.x = random.randint(width - (width - 100), width - 150)
 #Фон
 art = pygame.image.load('background.png')
 art = pygame.transform.scale(art, (width, height))
@@ -91,11 +91,15 @@ def draw_begin():
     ball_rect.x = 0
     start = True
     while start:
+        key = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-            elif pygame.key.get_pressed(pygame.K_RETURN):
+            if key[pygame.K_RETURN]:
                 start = False
+            if key[pygame.K_SPACE]:
+                start = False
+        startS.set_volume(0.05)
         startS.play()
         screen.fill(black)
         screen.blit(ball, ball_rect)
@@ -116,6 +120,80 @@ def draw_begin():
             SpeedY = -SpeedY
         pygame.display.update()
 
+def game():
+    global hp, speedX, speedY, score, maxScore
+    run = True
+    backgroungS.play()
+    while run:
+        clock.tick(fps)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+        key = pygame.key.get_pressed()
+            # Отрисовываем все спрайты, которые добавили ранее
+        Score = f1.render('Score: ' + str(score), 50, (white))
+        MaxScore = f1.render('Max score: ' + str(maxScore), 50, (white))
+        screen.blit(art, art_rect)
+        screen.blit(img, img_rect)
+        screen.blit(platform, platform_rect)
+        if hp >= 1:
+            screen.blit(heart1, heart1_rect)
+        if hp >= 2:
+            screen.blit(heart2, heart2_rect)
+        if hp >= 3:
+            screen.blit(heart3, heart3_rect)
+        screen.blit(Score, (10, 10))
+        screen.blit(MaxScore, (10, 60))
+
+        img_rect.x += speedX
+        img_rect.y += speedY
+        # Физика платформы и её звуки
+        if key[pygame.K_LEFT] and platform_rect.left > 0:
+            platform_rect.x -= 11
+        if key[pygame.K_RIGHT] and platform_rect.right < width:
+            platform_rect.x += 11
+        if img_rect.bottom > platform_rect.top:
+            if img_rect.left < platform_rect.right and img_rect.right > platform_rect.left:
+                speedY = -speedY
+                platformS.play()
+                score += 1
+
+        # Физика мяча и его звуки
+        if img_rect.top < 0:
+            speedY = -speedY
+            wallS.play()
+        if img_rect.left < 0:
+            speedX = -speedX
+            wallS.play()
+        if img_rect.right > width:
+            speedX = -speedX
+            wallS.play()
+        if img_rect.bottom > height:
+            if hp > 0:
+                fallS.play()
+            hp -= 1
+            if hp == 2:
+                heart3_rect.y = -50
+            if hp == 1:
+                heart2_rect.y = -50
+            if hp > 0:
+                img_rect.x = random.randint(width - (width - 50), width - 50)
+                img_rect.y = 5
+            elif hp == 0:
+                heart1_rect.y = -50
+                fallS.set_volume(0)
+
+                backgroungS.stop()
+                run = False
+                hp = 0
+                score = 0
+                img_rect.x = random.randint(width - (width - 100), width - 100)
+
+                pygame.display.update()
+        if score > maxScore:
+            maxScore += 1
+
+        pygame.display.update()
 
 def draw_game_over():
     global score, maxScore
@@ -124,12 +202,17 @@ def draw_game_over():
     text_game_over = f1.render('Game over!', True, white)
     text_game_over2 = f1.render('Your score: ' + str(score), True, white)
     text_game_over3 = f1.render('Your max score: ' + str(maxScore), True, white)
-    text_game_over4 = f2.render('To restart game press ENTER', True, white)
-    end = True
-    while end:
+    text_game_over4 = f2.render('To quit game press ENTER', True, white)
+    game_overS.play()
+    end = False
+    while not end:
+        key = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            if key[pygame.K_RETURN]:
+                end = True
+                score = 0
 
         screen.fill(black)
         screen.blit(text_game_over, ((width / 2) - 200, 150))
@@ -138,77 +221,12 @@ def draw_game_over():
         screen.blit(text_game_over4, ((width / 2) - 380, 400))
         pygame.display.update()
 
-#Основной игровой цикл
-run = True
-backgroungS.play()
-while run:
-    clock.tick(fps)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-    key = pygame.key.get_pressed()
-    #Отрисовываем все спрайты, которые добавили ранее
-    Score = f1.render('Score: ' + str(score), 50, (white))
-    MaxScore = f1.render('Max score: ' + str(maxScore), 50, (white))
-    screen.blit(art, art_rect)
-    screen.blit(img, img_rect)
-    screen.blit(platform, platform_rect)
-    if hp >= 1:
-        screen.blit(heart1, heart1_rect)
-    if hp >= 2:
-        screen.blit(heart2, heart2_rect)
-    if hp >= 3:
-        screen.blit(heart3, heart3_rect)
-    screen.blit(Score, (10, 10))
-    screen.blit(MaxScore, (10, 60))
 
+draw_begin()
+startS.stop()
 
-    img_rect.x += speedX
-    img_rect.y += speedY
-    #Физика платформы и её звуки
-    if key[pygame.K_LEFT] and platform_rect.left > 0:
-        platform_rect.x -= 11
-    if key[pygame.K_RIGHT] and platform_rect.right < width:
-        platform_rect.x += 11
-    if img_rect.bottom > platform_rect.top:
-        if img_rect.left < platform_rect.right and img_rect.right > platform_rect.left:
-            speedY = -speedY
-            platformS.play()
-            score += 1
-
-    #Физика мяча и его звуки
-    if img_rect.top < 0:
-        speedY = -speedY
-        wallS.play()
-    if img_rect.left < 0:
-        speedX = -speedX
-        wallS.play()
-    if img_rect.right > width:
-        speedX = -speedX
-        wallS.play()
-    if img_rect.bottom > height:
-        if hp > 0:
-            fallS.play()
-        hp -= 1
-        if hp == 2:
-            heart3_rect.y = -50
-        if hp == 1:
-            heart2_rect.y = -50
-        if hp > 0:
-            img_rect.x = random.randint(width - (width - 50), width - 50)
-            img_rect.y = 5
-        elif hp == 0:
-            heart1_rect.y = -50
-            fallS.set_volume(0)
-
-            backgroungS.stop()
-            game_overS.play()
-
-            draw_game_over()
-            pygame.display.update()
-    if score > maxScore:
-        maxScore += 1
-
-    pygame.display.update()
+game()
+backgroungS.stop()
+draw_game_over()
 
 pygame.quit()

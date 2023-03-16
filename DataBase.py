@@ -1,18 +1,15 @@
-#import sqlite3
-#from main import MaxScore
+import sqlite3
+from main import maxScore
 
-#db = sqlite3.connect('maxScore.sqlite')
-#cur = db.cursor()
+record = maxScore
+print(record)
+db = sqlite3.connect('MaxScore.sqlite')
 
-#cur.execute("""
-#create table if not exists Records (
+c = db.cursor()
+#c.execute("""CREATE TABLE MaxScore (
     #score integer
 #)""")
-#db.commit()
-#cur.execute(f"INSERT INTO Records VALUES (?)", (MaxScore))
+c.execute("INSERT INTO MaxScore (record)")
 
-#cur.execute("""SELECT max(score) maxScore from Records""")
-
-#result = cur.fetchall()
-#print(result)
-#cur.close
+db.commit()
+db.close()
