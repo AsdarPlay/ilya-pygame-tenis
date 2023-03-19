@@ -23,8 +23,8 @@ fallS.set_volume(0.3)
 wallS = pygame.mixer.Sound('Sounds/walls.ogg')
 wallS.set_volume(0.3)
 #Параметры игры: ширина, высота, количество fps
-width = 1366
-height = 900
+width = 1266
+height = 800
 fps = 60
 #Задаём имя проекту и создаём экран для игры
 gameName = 'First project'
@@ -38,25 +38,27 @@ blue = '#0000FF'
 cyan = '#00FFFF'
 #Добавляем три жизни
 hp = 3
-heart1 = pygame.image.load('heart.png')
-heart1 = pygame.transform.scale(heart1, (50, 50))
-heart1_rect = heart1.get_rect()
-heart1_rect.x = width - 50
+heart = pygame.image.load('heart.png')
+heart = pygame.transform.scale(heart, (50, 50))
+heart_rect = heart.get_rect()
 
 heart2 = pygame.image.load('heart.png')
-heart2 = pygame.transform.scale(heart2, (50, 50))
+heart2 = pygame.transform.scale(heart, (50, 50))
 heart2_rect = heart2.get_rect()
-heart2_rect.x = width - 100
 
 heart3 = pygame.image.load('heart.png')
-heart3 = pygame.transform.scale(heart3, (50, 50))
+heart3 = pygame.transform.scale(heart, (50, 50))
 heart3_rect = heart3.get_rect()
-heart3_rect.x = width - 150
+
 #Добавляем мячик
 img = pygame.image.load('ball.png')
-img = pygame.transform.scale(img, (80, 80))
+img = pygame.transform.scale(img, (70, 70))
 img_rect = img.get_rect()
 img_rect.x = random.randint(width - (width - 100), width - 150)
+
+img2 = pygame.image.load('ball.png')
+im2 = pygame.transform.scale(img2, (70, 70))
+img2_rect = img2.get_rect()
 #Фон
 art = pygame.image.load('background.png')
 art = pygame.transform.scale(art, (width, height))
@@ -76,6 +78,8 @@ f1 = pygame.font.Font(None, 46)
 #Параметры скорости мяча
 speedX = 12
 speedY = 12
+speedX2 = 12
+speedY2 = 12
 
 clock = pygame.time.Clock()
 
@@ -136,12 +140,7 @@ def game():
         screen.blit(art, art_rect)
         screen.blit(img, img_rect)
         screen.blit(platform, platform_rect)
-        if hp >= 1:
-            screen.blit(heart1, heart1_rect)
-        if hp >= 2:
-            screen.blit(heart2, heart2_rect)
-        if hp >= 3:
-            screen.blit(heart3, heart3_rect)
+
         screen.blit(Score, (10, 10))
         screen.blit(MaxScore, (10, 60))
 
@@ -170,39 +169,48 @@ def game():
             wallS.play()
         if img_rect.bottom > height:
             if hp > 0:
+                hp -= 1
                 fallS.play()
-            hp -= 1
-            if hp == 2:
-                heart3_rect.y = -50
-            if hp == 1:
-                heart2_rect.y = -50
-            if hp > 0:
-                img_rect.x = random.randint(width - (width - 50), width - 50)
-                img_rect.y = 5
+                img_rect.x = random.randint(width - (width - 100), width - 100)
+                img_rect.y = 0
             elif hp == 0:
-                heart1_rect.y = -50
                 fallS.set_volume(0)
-
                 backgroungS.stop()
                 run = False
-                hp = 0
-                score = 0
                 img_rect.x = random.randint(width - (width - 100), width - 100)
+                img_rect.y = 0
 
                 pygame.display.update()
+
+        if hp == 3:
+            screen.blit(heart, heart_rect)
+            heart_rect.x = width - 150
+            screen.blit(heart2, heart2_rect)
+            heart2_rect.x = width - 100
+            screen.blit(heart3, heart3_rect)
+            heart3_rect.x = width - 50
+        if hp == 2:
+            screen.blit(heart2, heart2_rect)
+            heart2_rect.x = width - 100
+            screen.blit(heart3, heart3_rect)
+            heart3_rect.x = width - 50
+        if hp == 1:
+            screen.blit(heart3, heart3_rect)
+            heart3_rect.x = width - 50
         if score > maxScore:
             maxScore += 1
 
         pygame.display.update()
 
 def draw_game_over():
-    global score, maxScore
+    global score, maxScore, hp
     f1 = pygame.font.Font(None, 100)
     f2 = pygame.font.Font(None, 80)
     text_game_over = f1.render('Game over!', True, white)
     text_game_over2 = f1.render('Your score: ' + str(score), True, white)
     text_game_over3 = f1.render('Your max score: ' + str(maxScore), True, white)
-    text_game_over4 = f2.render('To quit game press ENTER', True, white)
+    text_game_over4 = f2.render('To quit game press ESCAPE', True, white)
+    text_game_over5 = f2.render('To restart game press ENTER', True, white)
     game_overS.play()
     end = False
     while not end:
@@ -210,23 +218,27 @@ def draw_game_over():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            if key[pygame.K_ESCAPE]:
+                pygame.quit()
             if key[pygame.K_RETURN]:
                 end = True
                 score = 0
+                hp = 3
 
         screen.fill(black)
         screen.blit(text_game_over, ((width / 2) - 200, 150))
         screen.blit(text_game_over2, ((width / 2) - 230, 220))
-        screen.blit(text_game_over3, ((width / 2) - 285, 330))
+        screen.blit(text_game_over3, ((width / 2) - 285, 290))
         screen.blit(text_game_over4, ((width / 2) - 380, 400))
+        screen.blit(text_game_over5, ((width / 2) - 380, 470))
         pygame.display.update()
 
-
+#Вызов функций игры
 draw_begin()
 startS.stop()
-
-game()
-backgroungS.stop()
-draw_game_over()
+while True:
+    game()
+    backgroungS.stop()
+    draw_game_over()
 
 pygame.quit()
