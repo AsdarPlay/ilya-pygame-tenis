@@ -7,6 +7,9 @@ pygame.init() #Инициализируем pygame, который импорт�
 backgroungS = pygame.mixer.Sound('Sounds/Background.ogg')
 backgroungS.set_volume(0.1)
 
+backgroungS2 = pygame.mixer.Sound('Sounds/background2.ogg')
+backgroungS2.set_volume(0.1)
+
     #Стартовая музыка
 startS = pygame.mixer.Sound('Sounds/start.ogg')
 startS.set_volume(0.1)
@@ -57,8 +60,9 @@ img_rect = img.get_rect()
 img_rect.x = random.randint(width - (width - 100), width - 150)
 
 img2 = pygame.image.load('ball.png')
-im2 = pygame.transform.scale(img2, (70, 70))
+img2 = pygame.transform.scale(img2, (70, 70))
 img2_rect = img2.get_rect()
+
 #Фон
 art = pygame.image.load('background.png')
 art = pygame.transform.scale(art, (width, height))
@@ -78,8 +82,9 @@ f1 = pygame.font.Font(None, 46)
 #Параметры скорости мяча
 speedX = 12
 speedY = 12
-speedX2 = 12
-speedY2 = 12
+speedX2 = 10
+speedY2 = 10
+PlatformSpeed = 11
 
 clock = pygame.time.Clock()
 
@@ -125,15 +130,19 @@ def draw_begin():
         pygame.display.update()
 
 def game():
-    global hp, speedX, speedY, score, maxScore
+    global hp, speedX, speedY, speedX2, speedY2, score, maxScore, PlatformSpeed
     run = True
     backgroungS.play()
+    fallS.set_volume(0.3)
     while run:
         clock.tick(fps)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
         key = pygame.key.get_pressed()
+
+
+
             # Отрисовываем все спрайты, которые добавили ранее
         Score = f1.render('Score: ' + str(score), 50, (white))
         MaxScore = f1.render('Max score: ' + str(maxScore), 50, (white))
@@ -146,16 +155,52 @@ def game():
 
         img_rect.x += speedX
         img_rect.y += speedY
+
         # Физика платформы и её звуки
         if key[pygame.K_LEFT] and platform_rect.left > 0:
-            platform_rect.x -= 11
+            platform_rect.x -= PlatformSpeed
         if key[pygame.K_RIGHT] and platform_rect.right < width:
-            platform_rect.x += 11
+            platform_rect.x += PlatformSpeed
         if img_rect.bottom > platform_rect.top:
             if img_rect.left < platform_rect.right and img_rect.right > platform_rect.left:
                 speedY = -speedY
                 platformS.play()
                 score += 1
+        if img2_rect.bottom > platform_rect.top:
+            if img2_rect.left < platform_rect.right and img2_rect.right > platform_rect.left:
+                speedY2 = -speedY2
+                platformS.play()
+                score += 1
+        if score == 10:
+            PlatformSpeed = 14.5
+        if score >= 10:
+            screen.blit(img2, img2_rect)
+
+            img2_rect.x += speedX2
+            img2_rect.y += speedY2
+
+            if img2_rect.top < 0:
+                speedY2 = -speedY2
+                wallS.play()
+            if img2_rect.left < 0:
+                speedX2 = -speedX2
+                wallS.play()
+            if img2_rect.right > width:
+                speedX2 = -speedX2
+                wallS.play()
+            if img2_rect.bottom > height:
+                if hp > 0:
+                    hp -= 1
+                    fallS.play()
+                    img2_rect.x = random.randint(width - (width - 100), width - 100)
+                    img2_rect.y = 0
+                elif hp == 0:
+                    fallS.set_volume(0)
+                    backgroungS.stop()
+                    img2_rect.x = random.randint(width - (width - 100), width - 100)
+                    img2_rect.y = 0
+                    run = False
+                    pygame.display.update()
 
         # Физика мяча и его звуки
         if img_rect.top < 0:
@@ -176,10 +221,9 @@ def game():
             elif hp == 0:
                 fallS.set_volume(0)
                 backgroungS.stop()
-                run = False
                 img_rect.x = random.randint(width - (width - 100), width - 100)
                 img_rect.y = 0
-
+                run = False
                 pygame.display.update()
 
         if hp == 3:

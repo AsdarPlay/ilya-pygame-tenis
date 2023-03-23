@@ -1,15 +1,13 @@
 import sqlite3
-from main import maxScore
 
-record = maxScore
-print(record)
+
 db = sqlite3.connect('MaxScore.sqlite')
-
 c = db.cursor()
-#c.execute("""CREATE TABLE MaxScore (
-    #score integer
-#)""")
-c.execute("INSERT INTO MaxScore (record)")
+c.execute("""CREATE TABLE IF NOT EXISTS MaxScore (
+    score INTEGER
+)""")
+maxScore = c.fetchall()
+print(maxScore)
 
 db.commit()
 db.close()
