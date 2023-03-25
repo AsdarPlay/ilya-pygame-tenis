@@ -7,9 +7,6 @@ pygame.init() #Инициализируем pygame, который импорт�
 backgroungS = pygame.mixer.Sound('Sounds/Background.ogg')
 backgroungS.set_volume(0.1)
 
-backgroungS2 = pygame.mixer.Sound('Sounds/background2.ogg')
-backgroungS2.set_volume(0.1)
-
     #Стартовая музыка
 startS = pygame.mixer.Sound('Sounds/start.ogg')
 startS.set_volume(0.1)
@@ -32,7 +29,7 @@ fps = 60
 #Задаём имя проекту и создаём экран для игры
 gameName = 'First project'
 screen = pygame.display.set_mode((width, height))
-#добавляем различные цвета
+#добавляем цвета
 black = '#000000'
 white = '#FFFFFF'
 red = '#FF0000'
@@ -53,6 +50,11 @@ heart3 = pygame.image.load('heart.png')
 heart3 = pygame.transform.scale(heart, (50, 50))
 heart3_rect = heart3.get_rect()
 
+#Фон для паузы
+pause_background = pygame.image.load('pause.png')
+pause_background = pygame.transform.scale(pause_background, (width, height))
+pause_background.set_alpha(80)
+pause_background_rect = pause_background.get_rect()
 #Добавляем мячик
 img = pygame.image.load('ball.png')
 img = pygame.transform.scale(img, (70, 70))
@@ -64,9 +66,9 @@ img2 = pygame.transform.scale(img2, (70, 70))
 img2_rect = img2.get_rect()
 
 #Фон
-art = pygame.image.load('background.png')
-art = pygame.transform.scale(art, (width, height))
-art_rect = art.get_rect()
+background = pygame.image.load('background.png')
+background = pygame.transform.scale(background, (width, height))
+background_rect = background.get_rect()
 #Платформа
 platform = pygame.image.load('platform.png')
 platform = pygame.transform.scale(platform, (200, 125))
@@ -87,6 +89,22 @@ speedY2 = 10
 PlatformSpeed = 11
 
 clock = pygame.time.Clock()
+
+def pause():
+    global img_rect, img2_rect
+    pause = True
+    while pause:
+        key = pygame.key.get_pressed()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if key[pygame.K_ESCAPE]:
+                pause = False
+        img_rect.x = img_rect.x
+        img2_rect.x = img2_rect.x
+        img_rect.y = img_rect.y
+        img2_rect.y = img2_rect.y
+    pygame.display.update()
 
 def draw_begin():
     SpeedX = 2
@@ -141,12 +159,13 @@ def game():
                 run = False
         key = pygame.key.get_pressed()
 
-
+        if key[pygame.K_TAB]:
+            pause()
 
             # Отрисовываем все спрайты, которые добавили ранее
         Score = f1.render('Score: ' + str(score), 50, (white))
         MaxScore = f1.render('Max score: ' + str(maxScore), 50, (white))
-        screen.blit(art, art_rect)
+        screen.blit(background, background_rect)
         screen.blit(img, img_rect)
         screen.blit(platform, platform_rect)
 
@@ -174,6 +193,7 @@ def game():
         if score == 10:
             PlatformSpeed = 14.5
         if score >= 10:
+
             screen.blit(img2, img2_rect)
 
             img2_rect.x += speedX2
