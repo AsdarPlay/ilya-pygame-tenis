@@ -32,10 +32,6 @@ screen = pygame.display.set_mode((width, height))
 #добавляем цвета
 black = '#000000'
 white = '#FFFFFF'
-red = '#FF0000'
-green = '#008000'
-blue = '#0000FF'
-cyan = '#00FFFF'
 #Добавляем три жизни
 hp = 3
 heart = pygame.image.load('heart.png')
@@ -61,7 +57,7 @@ img = pygame.transform.scale(img, (70, 70))
 img_rect = img.get_rect()
 img_rect.x = random.randint(width - (width - 100), width - 150)
 
-img2 = pygame.image.load('ball.png')
+img2 = pygame.image.load('ball2.png')
 img2 = pygame.transform.scale(img2, (70, 70))
 img2_rect = img2.get_rect()
 
@@ -71,7 +67,7 @@ background = pygame.transform.scale(background, (width, height))
 background_rect = background.get_rect()
 #Платформа
 platform = pygame.image.load('platform.png')
-platform = pygame.transform.scale(platform, (200, 125))
+platform = pygame.transform.scale(platform, (230, 125))
 platform_rect = platform.get_rect()
 platform_rect.x = width / 2 - 50
 platform_rect.y = height - 100
